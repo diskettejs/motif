@@ -3,7 +3,7 @@ import type { CSSProps } from './types.ts'
 
 export interface MotifStyle<
   P extends CSSProps = CSSProps,
-  SH extends string = string,
+  SH extends string = never,
 > {
   baseClassName?: string
   refs: Record<P, string>
@@ -13,7 +13,7 @@ export interface MotifStyle<
 
 export function motifStyle<
   P extends readonly CSSProps[],
-  SH extends string = string,
+  SH extends string = never,
 >(
   properties: P,
   options: {

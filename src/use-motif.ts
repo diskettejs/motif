@@ -1,36 +1,32 @@
-import type { CSSProperties } from '@vanilla-extract/css'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import type { CSSProps, MotifCss, MotifStyle } from './types.ts'
 import { categorizeProps, resolveValue } from './utils.ts'
 
 export type UseMotifProps<
   P extends CSSProps = never,
   SH extends string = never,
-  Props extends Record<string, any> = {},
-> = Props & {
+> = {
   className?: string
   style?: CSSProperties
 } & MotifCss<P, SH>
 
-type UseMotifReturn<
-  P extends CSSProps,
-  SH extends string = string,
-  Props extends Record<string, any> = {},
-> = Omit<Props, P | SH> & {
-  className?: string
-  style?: CSSProperties
-}
+
+type ExtractMotifKeys<T> = T extends MotifStyle<infer P, infer SH>
+  ? P | (SH extends never ? never : SH)
+  : never
 
 export function useMotif<
-  P extends CSSProps,
-  SH extends string = string,
-  Props extends Record<string, any> = {},
+  TProps extends Record<string, any>,
+  TConfig extends MotifStyle<any, any>
 >(
-  props: UseMotifProps<P, SH, Props>,
-  config: MotifStyle<P, SH>,
-): UseMotifReturn<P, SH, Props> {
+  props: TProps,
+  config: TConfig,
+): Omit<TProps, ExtractMotifKeys<TConfig> | 'className' | 'style'> & {
+  className?: string
+  style?: CSSProperties
+} {
   return useMemo(() => {
     const { className, style, ...allProps } = props
 
@@ -46,10 +42,11 @@ export function useMotif<
       }
 
       const cssVar = config.refs[key as keyof typeof config.refs]
-      vars[cssVar] = resolveValue(key, value)
-      styleClassNames.push(
-        config.classNames[key as keyof typeof config.classNames],
-      )
+      const className = config.classNames[key as keyof typeof config.classNames]
+      if (cssVar && className) {
+        vars[cssVar] = resolveValue(key, value)
+        styleClassNames.push(className)
+      }
     }
 
     // Process shorthands
@@ -58,15 +55,16 @@ export function useMotif<
         continue
       }
 
-      const properties = config.shorthands?.[shorthand as SH] || []
+      const properties = config.shorthands?.[shorthand] || []
 
       for (const prop of properties) {
         if (prop in config.refs) {
           const cssVar = config.refs[prop as keyof typeof config.refs]
-          vars[cssVar] = resolveValue(prop as string, value)
-          styleClassNames.push(
-            config.classNames[prop as keyof typeof config.classNames],
-          )
+          const className = config.classNames[prop as keyof typeof config.classNames]
+          if (cssVar && className) {
+            vars[cssVar] = resolveValue(prop as string, value)
+            styleClassNames.push(className)
+          }
         }
       }
     }
@@ -88,8 +86,8 @@ export function useMotif<
     }
 
     return {
-      ...processed,
       ...rest,
-    } as UseMotifReturn<P, SH, Props>
+      ...processed,
+    } as any
   }, [props, config])
 }

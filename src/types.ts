@@ -1,10 +1,10 @@
-import { type CSSProperties } from '@vanilla-extract/css'
+import { type CSSProperties } from 'react'
 
 export type CSSProps = keyof CSSProperties
 
 export interface MotifStyle<
   P extends CSSProps = CSSProps,
-  SH extends string = string,
+  SH extends string = never,
 > {
   baseClassName?: string
   refs: Record<P, string>
