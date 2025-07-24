@@ -1,4 +1,4 @@
-export { motifStyle } from "./motif-style.ts";
+export { motifStyle } from './motif-style.ts'
 
 export type {
   CSSPropertiesSubset,
@@ -6,11 +6,11 @@ export type {
   Infer,
   MotifCss,
   MotifStyle,
-} from "./types.ts";
+} from './types.ts'
 
-export { createUseMotif } from "./create-use-motif.ts";
+export { createUseMotif } from './create-use-motif.ts'
 
-export { useMotif } from "./use-motif.ts";
-export type { UseMotifProps } from "./use-motif.ts";
+export { useMotif } from './use-motif.ts'
+export type { UseMotifProps } from './use-motif.ts'
 
-export { categorizeProps, resolveValue, UNITLESS } from "./utils.ts";
+export { categorizeProps, resolveValue, UNITLESS } from './utils.ts'

@@ -9,7 +9,7 @@ import { readConfig } from './utils.ts'
 import { VanillaMotif } from './vanilla-motif.ts'
 
 const cli = meow(
-	`
+  `
 	Usage
 	  $ vex
 
@@ -18,50 +18,50 @@ const cli = meow(
     --css-ext
     --imports
 `,
-	{
-		importMeta: import.meta,
-		flags: {
-			ident: {
-				choices: ['short', 'debug'],
-				default: 'short',
-				type: 'string',
-			},
-			cssExt: {
-				type: 'string',
-			},
-			imports: {
-				type: 'boolean',
-				default: true,
-			},
-			tsconfig: {
-				type: 'string',
-			},
-		},
-	},
+  {
+    importMeta: import.meta,
+    flags: {
+      ident: {
+        choices: ['short', 'debug'],
+        default: 'short',
+        type: 'string',
+      },
+      cssExt: {
+        type: 'string',
+      },
+      imports: {
+        type: 'boolean',
+        default: true,
+      },
+      tsconfig: {
+        type: 'string',
+      },
+    },
+  },
 )
 
 let config
 if (cli.flags.tsconfig) {
-	const configFile = ts.findConfigFile(
-		ts.sys.resolvePath(cli.flags.tsconfig),
-		ts.sys.fileExists,
-		basename(cli.flags.tsconfig),
-	)
-	invariant(configFile, `Could not find config: ${cli.flags.tsconfig}`)
-	config = readConfig(configFile)
+  const configFile = ts.findConfigFile(
+    ts.sys.resolvePath(cli.flags.tsconfig),
+    ts.sys.fileExists,
+    basename(cli.flags.tsconfig),
+  )
+  invariant(configFile, `Could not find config: ${cli.flags.tsconfig}`)
+  config = readConfig(configFile)
 }
 
 const vex = new VanillaMotif(
-	{
-		identifier: cli.flags.ident as IdentifierOption,
-		cssExt: cli.flags.cssExt,
-		imports: cli.flags.imports,
-	},
-	config,
+  {
+    identifier: cli.flags.ident as IdentifierOption,
+    cssExt: cli.flags.cssExt,
+    imports: cli.flags.imports,
+  },
+  config,
 )
 
 const files = vex.compile()
 
 for (const [path, content] of files) {
-	ts.sys.writeFile(path, content)
+  ts.sys.writeFile(path, content)
 }
